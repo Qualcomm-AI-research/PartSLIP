@@ -1,4 +1,4 @@
-FROM docker-registry.qualcomm.com/library/nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+FROM nvcr.io/nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
 
 SHELL ["/bin/bash", "-l", "-c"]
 WORKDIR /partslip
