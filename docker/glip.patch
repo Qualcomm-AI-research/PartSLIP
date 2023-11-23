@@ -1,0 +1,368 @@
+diff --git a/configs/glip_Swin_L.yaml b/configs/glip_Swin_L.yaml
+new file mode 100644
+index 0000000..46cf92f
+--- /dev/null
++++ b/configs/glip_Swin_L.yaml
+@@ -0,0 +1,121 @@
++MODEL:
++  META_ARCHITECTURE: "GeneralizedVLRCNN"
++  WEIGHT: "swin_large_patch4_window12_384_22k.pth"
++  RPN_ONLY: True
++  RPN_ARCHITECTURE: "VLDYHEAD"
++
++  BACKBONE:
++    CONV_BODY: "SWINT-FPN-RETINANET"
++    OUT_CHANNELS: 256
++
++  SWINT:
++    EMBED_DIM: 192
++    DEPTHS: (2, 2, 18, 2)
++    NUM_HEADS: (6, 12, 24, 48)
++    WINDOW_SIZE: 12
++    OUT_CHANNELS: (192, 384, 768, 1536)
++    DROP_PATH_RATE: 0.4
++
++  LANGUAGE_BACKBONE:
++    FREEZE: False
++    MODEL_TYPE: "bert-base-uncased" # "roberta-base", "clip"
++    MASK_SPECIAL: False
++
++  RPN:
++    RETURN_FUSED_FEATURES: True
++    USE_FPN: True
++    ANCHOR_SIZES: (64, 128, 256, 512, 1024)
++    ANCHOR_STRIDE: (8, 16, 32, 64, 128)
++    ASPECT_RATIOS: (1.0,)
++    SCALES_PER_OCTAVE: 1
++
++  DYHEAD:
++    CHANNELS: 256
++    NUM_CONVS: 8
++    USE_GN: True
++    USE_DYRELU: True
++    USE_DFCONV: True
++    USE_DYFUSE: True
++    TOPK: 9 # topk for selecting candidate positive samples from each level
++    SCORE_AGG: "MEAN"
++    LOG_SCALE: 0.0
++
++    USE_CHECKPOINT: True
++    FUSE_CONFIG:
++      USE_FUSED_FEATURES_DOT_PRODUCT: True
++      EARLY_FUSE_ON: True
++      TYPE: "MHA-B"
++      USE_CLASSIFICATION_LOSS: False
++      USE_TOKEN_LOSS: False
++      USE_CONTRASTIVE_ALIGN_LOSS: False
++      CONTRASTIVE_HIDDEN_DIM: 64
++      USE_DOT_PRODUCT_TOKEN_LOSS: True
++      USE_LAYER_SCALE: True
++      CLAMP_MIN_FOR_UNDERFLOW: True
++      CLAMP_MAX_FOR_OVERFLOW: True
++      CLAMP_BERTATTN_MIN_FOR_UNDERFLOW: True
++      CLAMP_BERTATTN_MAX_FOR_OVERFLOW: True
++      CLAMP_DOT_PRODUCT: True
++
++DATASETS:
++
++  TRAIN: ("mixed_train_no_coco",) # Place holder dataset for now. To be updated in the next version
++  TEST: ("coco_2017_val", )
++
++  ONE_HOT: False
++  FLICKR_COPY: 8 # 0.15 * 8 = ~1.2M
++  MIXED_COPY: 4 # 0.6 * 4 = ~2.4M
++  OBJECT365_COPY: 2 # 1.4 * 2 = ~2.8M
++  VG_COPY: 3 # 0.4 * 3 = ~1.2M
++  IN_COPY: 2 # 0.67 * 2 = ~1.33M
++  OI_COPY: 1 # 2M * 1 = 2M
++
++  DISABLE_SHUFFLE: False
++  ADD_DET_PROMPT: False
++  RANDOM_SAMPLE_NEG: 85
++  CONTROL_PROB: (0.0, 0.0, 0.5, 0.0)
++  FURTHER_SCREEN: True
++  CAPTION_CONF: 0.5
++  CAPTION_NMS: -1.0
++  CAPTION_MIN_BOX: 1
++
++  SEPARATION_TOKENS: ". "
++
++  PACK_RANDOM_CAPTION_NUMBER: 20
++  NO_RANDOM_PACK_PROBABILITY: 0.4
++  RANDOM_PACK_PROB: 0.5
++  CAPTION_FORMAT_VERSION: "v2"
++
++INPUT:
++  PIXEL_MEAN: [ 103.530, 116.280, 123.675 ]
++  PIXEL_STD: [ 57.375, 57.120, 58.395 ]
++  MIN_SIZE_TRAIN: 800
++  MAX_SIZE_TRAIN: 1333
++  MIN_SIZE_TEST: 800
++  MAX_SIZE_TEST: 1333
++
++AUGMENT:
++  MULT_MIN_SIZE_TRAIN: (480,560,640,720,800)
++
++DATALOADER:
++  SIZE_DIVISIBILITY: 32
++
++SOLVER:
++  OPTIMIZER: ADAMW
++  BASE_LR: 0.0001
++  LANG_LR: 0.00001
++  WEIGHT_DECAY: 0.01
++  WEIGHT_DECAY_SCHEDULE: True
++  STEPS: (0.67, 0.89)
++  MAX_ITER: 1000000
++  IMS_PER_BATCH: 64
++  WARMUP_ITERS: 2000
++  WARMUP_FACTOR: 0.001
++
++  FIND_UNUSED_PARAMETERS: False
++
++  CLIP_GRADIENTS:
++    ENABLED: True
++    CLIP_TYPE: "full_model"
++    CLIP_VALUE: 1.0
++    NORM_TYPE: 2.0
+diff --git a/configs/glip_Swin_L_pt.yaml b/configs/glip_Swin_L_pt.yaml
+new file mode 100644
+index 0000000..78e4e0c
+--- /dev/null
++++ b/configs/glip_Swin_L_pt.yaml
+@@ -0,0 +1,121 @@
++MODEL:
++  META_ARCHITECTURE: "GeneralizedVLRCNN"
++  WEIGHT: "swin_large_patch4_window12_384_22k.pth"
++  RPN_ONLY: True
++  RPN_ARCHITECTURE: "VLDYHEAD"
++
++  BACKBONE:
++    CONV_BODY: "SWINT-FPN-RETINANET"
++    OUT_CHANNELS: 256
++
++  SWINT:
++    EMBED_DIM: 192
++    DEPTHS: (2, 2, 18, 2)
++    NUM_HEADS: (6, 12, 24, 48)
++    WINDOW_SIZE: 12
++    OUT_CHANNELS: (192, 384, 768, 1536)
++    DROP_PATH_RATE: 0.4
++
++  LANGUAGE_BACKBONE:
++    FREEZE: False
++    MODEL_TYPE: "bert-base-uncased" # "roberta-base", "clip"
++    MASK_SPECIAL: False
++
++  RPN:
++    USE_FPN: True
++    ANCHOR_SIZES: (64, 128, 256, 512, 1024)
++    ANCHOR_STRIDE: (8, 16, 32, 64, 128)
++    ASPECT_RATIOS: (1.0,)
++    SCALES_PER_OCTAVE: 1
++
++  DYHEAD:
++    CHANNELS: 256
++    NUM_CONVS: 8
++    USE_GN: True
++    USE_DYRELU: True
++    USE_DFCONV: True
++    USE_DYFUSE: True
++    TOPK: 9 # topk for selecting candidate positive samples from each level
++    SCORE_AGG: "MEAN"
++    LOG_SCALE: 0.0
++
++    USE_CHECKPOINT: True
++    FUSE_CONFIG:
++      ADD_LINEAR_LAYER: True
++      USE_FUSED_FEATURES_DOT_PRODUCT: True
++      EARLY_FUSE_ON: True
++      TYPE: "MHA-B"
++      USE_CLASSIFICATION_LOSS: False
++      USE_TOKEN_LOSS: False
++      USE_CONTRASTIVE_ALIGN_LOSS: False
++      CONTRASTIVE_HIDDEN_DIM: 64
++      USE_DOT_PRODUCT_TOKEN_LOSS: True
++      USE_LAYER_SCALE: True
++      CLAMP_MIN_FOR_UNDERFLOW: True
++      CLAMP_MAX_FOR_OVERFLOW: True
++      CLAMP_BERTATTN_MIN_FOR_UNDERFLOW: True
++      CLAMP_BERTATTN_MAX_FOR_OVERFLOW: True
++      CLAMP_DOT_PRODUCT: True
++
++DATASETS:
++
++  TRAIN: ("mixed_train_no_coco",) # Place holder dataset for now. To be updated in the next version
++  TEST: ("coco_2017_val", )
++
++  ONE_HOT: False
++  FLICKR_COPY: 8 # 0.15 * 8 = ~1.2M
++  MIXED_COPY: 4 # 0.6 * 4 = ~2.4M
++  OBJECT365_COPY: 2 # 1.4 * 2 = ~2.8M
++  VG_COPY: 3 # 0.4 * 3 = ~1.2M
++  IN_COPY: 2 # 0.67 * 2 = ~1.33M
++  OI_COPY: 1 # 2M * 1 = 2M
++
++  DISABLE_SHUFFLE: False
++  ADD_DET_PROMPT: False
++  RANDOM_SAMPLE_NEG: 85
++  CONTROL_PROB: (0.0, 0.0, 0.5, 0.0)
++  FURTHER_SCREEN: True
++  CAPTION_CONF: 0.5
++  CAPTION_NMS: -1.0
++  CAPTION_MIN_BOX: 1
++
++  SEPARATION_TOKENS: ". "
++
++  PACK_RANDOM_CAPTION_NUMBER: 20
++  NO_RANDOM_PACK_PROBABILITY: 0.4
++  RANDOM_PACK_PROB: 0.5
++  CAPTION_FORMAT_VERSION: "v2"
++
++INPUT:
++  PIXEL_MEAN: [ 103.530, 116.280, 123.675 ]
++  PIXEL_STD: [ 57.375, 57.120, 58.395 ]
++  MIN_SIZE_TRAIN: 800
++  MAX_SIZE_TRAIN: 1333
++  MIN_SIZE_TEST: 800
++  MAX_SIZE_TEST: 1333
++
++AUGMENT:
++  MULT_MIN_SIZE_TRAIN: (480,560,640,720,800)
++
++DATALOADER:
++  SIZE_DIVISIBILITY: 32
++
++SOLVER:
++  OPTIMIZER: ADAMW
++  BASE_LR: 0.0001
++  LANG_LR: 0.00001
++  WEIGHT_DECAY: 0.01
++  WEIGHT_DECAY_SCHEDULE: True
++  STEPS: (0.67, 0.89)
++  MAX_ITER: 1000000
++  IMS_PER_BATCH: 64
++  WARMUP_ITERS: 2000
++  WARMUP_FACTOR: 0.001
++
++  FIND_UNUSED_PARAMETERS: False
++
++  CLIP_GRADIENTS:
++    ENABLED: True
++    CLIP_TYPE: "full_model"
++    CLIP_VALUE: 1.0
++    NORM_TYPE: 2.0
+diff --git a/maskrcnn_benchmark/engine/predictor_glip.py b/maskrcnn_benchmark/engine/predictor_glip.py
+index 6d28576..d3f8052 100644
+--- a/maskrcnn_benchmark/engine/predictor_glip.py
++++ b/maskrcnn_benchmark/engine/predictor_glip.py
+@@ -185,17 +185,18 @@ class GLIPDemo(object):
+             caption_string = ""
+             tokens_positive = []
+             seperation_tokens = " . "
++            self.entities = original_caption
+             for word in original_caption:
+                 
+-                tokens_positive.append([len(caption_string), len(caption_string) + len(word)])
++                tokens_positive.append([[len(caption_string), len(caption_string) + len(word)]])
+                 caption_string += word
+                 caption_string += seperation_tokens
+             
+             tokenized = self.tokenizer([caption_string], return_tensors="pt")
+-            tokens_positive = [tokens_positive]
++            tokens_positive = tokens_positive
+ 
+             original_caption = caption_string
+-            print(tokens_positive)
++            #print(tokens_positive)
+         else:
+             tokenized = self.tokenizer([original_caption], return_tensors="pt")
+             if custom_entity is None:
+@@ -218,7 +219,7 @@ class GLIPDemo(object):
+         with torch.no_grad():
+             predictions = self.model(image_list, captions=[original_caption], positive_map=positive_map_label_to_token)
+             predictions = [o.to(self.cpu_device) for o in predictions]
+-        print("inference time per image: {}".format(timeit.time.perf_counter() - tic))
++        #print("inference time per image: {}".format(timeit.time.perf_counter() - tic))
+ 
+         # always single image is passed at a time
+         prediction = predictions[0]
+@@ -295,7 +296,7 @@ class GLIPDemo(object):
+             box = box.to(torch.int64)
+             top_left, bottom_right = box[:2].tolist(), box[2:].tolist()
+             new_image = cv2.rectangle(
+-                new_image, tuple(top_left), tuple(bottom_right), tuple(color), box_pixel)
++                new_image, tuple(top_left), tuple(bottom_right), tuple([0,0,255]), box_pixel)
+ 
+         # Following line overlays transparent rectangle over the image
+         image = cv2.addWeighted(new_image, alpha, image, 1 - alpha, 0)
+@@ -314,7 +315,7 @@ class GLIPDemo(object):
+ 
+         return image
+ 
+-    def overlay_entity_names(self, image, predictions, names=None, text_size=1.0, text_pixel=2, text_offset = 10, text_offset_original = 4):
++    def overlay_entity_names(self, image, predictions, names=None, text_size=2.0, text_pixel=2, text_offset = 10, text_offset_original = 4):
+         scores = predictions.get_field("scores").tolist()
+         labels = predictions.get_field("labels").tolist()
+         new_labels = []
+@@ -344,7 +345,7 @@ class GLIPDemo(object):
+                     y -= text_offset
+ 
+             cv2.putText(
+-                image, s, (int(x), int(y)-text_offset_original), cv2.FONT_HERSHEY_SIMPLEX, text_size, (self.color, self.color, self.color), text_pixel, cv2.LINE_AA
++                image, s, (int(x), int(y)-text_offset_original), cv2.FONT_HERSHEY_SIMPLEX, text_size, (0, 0, 255), text_pixel, cv2.LINE_AA
+             )
+             previous_locations.append((int(x), int(y)))
+ 
+diff --git a/maskrcnn_benchmark/modeling/backbone/swint.py b/maskrcnn_benchmark/modeling/backbone/swint.py
+index c0a162b..f524362 100644
+--- a/maskrcnn_benchmark/modeling/backbone/swint.py
++++ b/maskrcnn_benchmark/modeling/backbone/swint.py
+@@ -479,7 +479,7 @@ class SwinTransformer(nn.Module):
+                  backbone_arch="SWINT-FPN-RETINANET"):
+         super(SwinTransformer, self).__init__()
+ 
+-        print("VISION BACKBONE USE GRADIENT CHECKPOINTING: ", use_checkpoint)
++        #print("VISION BACKBONE USE GRADIENT CHECKPOINTING: ", use_checkpoint)
+         
+         self.pretrain_img_size = pretrain_img_size
+         self.num_layers = len(depths)
+diff --git a/maskrcnn_benchmark/modeling/language_backbone/bert_model.py b/maskrcnn_benchmark/modeling/language_backbone/bert_model.py
+index 4b69c54..d7fec9c 100644
+--- a/maskrcnn_benchmark/modeling/language_backbone/bert_model.py
++++ b/maskrcnn_benchmark/modeling/language_backbone/bert_model.py
+@@ -12,7 +12,7 @@ class BertEncoder(nn.Module):
+         super(BertEncoder, self).__init__()
+         self.cfg = cfg
+         self.bert_name = cfg.MODEL.LANGUAGE_BACKBONE.MODEL_TYPE
+-        print("LANGUAGE BACKBONE USE GRADIENT CHECKPOINTING: ", self.cfg.MODEL.LANGUAGE_BACKBONE.USE_CHECKPOINT)
++        #print("LANGUAGE BACKBONE USE GRADIENT CHECKPOINTING: ", self.cfg.MODEL.LANGUAGE_BACKBONE.USE_CHECKPOINT)
+ 
+         if self.bert_name == "bert-base-uncased":
+             config = BertConfig.from_pretrained(self.bert_name)
+diff --git a/maskrcnn_benchmark/modeling/language_backbone/clip_model.py b/maskrcnn_benchmark/modeling/language_backbone/clip_model.py
+index 781f4f4..47eaf08 100644
+--- a/maskrcnn_benchmark/modeling/language_backbone/clip_model.py
++++ b/maskrcnn_benchmark/modeling/language_backbone/clip_model.py
+@@ -72,7 +72,7 @@ class CLIPTransformer(nn.Module):
+ 
+         self.cfg = cfg
+         self.use_checkpoint = cfg.MODEL.LANGUAGE_BACKBONE.USE_CHECKPOINT
+-        print("LANGUAGE BACKBONE USE GRADIENT CHECKPOINTING: ", self.cfg.MODEL.LANGUAGE_BACKBONE.USE_CHECKPOINT)
++        #print("LANGUAGE BACKBONE USE GRADIENT CHECKPOINTING: ", self.cfg.MODEL.LANGUAGE_BACKBONE.USE_CHECKPOINT)
+ 
+         self.context_length = self.cfg.MODEL.CLIP.CONTEXT_LENGTH
+         self.width = self.cfg.MODEL.CLIP.WIDTH
+diff --git a/maskrcnn_benchmark/modeling/rpn/vldyhead.py b/maskrcnn_benchmark/modeling/rpn/vldyhead.py
+index 2edbb5d..7e1887c 100644
+--- a/maskrcnn_benchmark/modeling/rpn/vldyhead.py
++++ b/maskrcnn_benchmark/modeling/rpn/vldyhead.py
+@@ -363,7 +363,7 @@ class VLFuse(torch.nn.Module):
+             self.dummy_tensor = torch.ones(1, dtype=torch.float32, requires_grad=True)
+ 
+         # early fusion module
+-        print("EARLY FUSION ON, USING {}".format(cfg.MODEL.DYHEAD.FUSE_CONFIG.TYPE))
++        #print("EARLY FUSION ON, USING {}".format(cfg.MODEL.DYHEAD.FUSE_CONFIG.TYPE))
+         if cfg.MODEL.DYHEAD.FUSE_CONFIG.TYPE == "MHA-S":
+             # single-direction (text->image)
+             # text -> image
