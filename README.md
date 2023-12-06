@@ -35,7 +35,10 @@ Within the docker container
 ```
 wget -P models https://huggingface.co/GLIPModel/GLIP/resolve/main/glip_large_model.pth
 ```
-
+The pre-trained [few-shot checkpoints](https://huggingface.co/datasets/minghua/PartSLIP/tree/main/models) of each object category for few-shot inferences can be downloaded on huggingface. 
+```
+wget -P models https://huggingface.co/datasets/minghua/PartSLIP/resolve/main/models/Chair.pth
+```
 
 ### Inference
 After downloading the models within the docker container, run the inference with
@@ -45,6 +48,7 @@ python3 demo.py
 
 ## PartNet-Ensembled
 
+The test and few_shot splits are hosted on [huggingface](https://huggingface.co/datasets/minghua/PartSLIP/tree/main/data).
 
 The details to curate the dataset can be found in the paper (https://arxiv.org/abs/2212.01558). Here is the general procedure: 
 
